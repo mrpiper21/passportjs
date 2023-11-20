@@ -1,0 +1,44 @@
+h1 {
+    text-align: center;
+  }
+  
+  form {
+    width: 300px;
+    margin: 0 auto;
+  }
+  
+  div {
+    margin-bottom: 15px;
+  }
+  
+  label {
+    display: block;
+    margin-bottom: 5px;
+  }
+  
+  input {
+    width: 100%;
+    padding: 10px;
+    box-sizing: border-box;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    font-size: 16px;
+  }
+  
+  button {
+    width: 100%;
+    padding: 10px;
+    background-color: #4CAF50;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 16px;
+  }
+  
+  a {
+    text-align: center;
+    display: block;
+    text-decoration: none;
+    color: #4CAF50;
+  }
