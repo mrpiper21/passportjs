@@ -8,8 +8,11 @@ const route = require('./routes/userRoute')
 const passport = require('passport')
 const flash = require('express-flash')
 const session = require('express-session')
+const bcrypt = require('bcrypt')
+const mdethoOverride = require('method-override')
 const port = process.env.PORT || 3000
 
+const User = []
 const initializePassport = require('./passport-config')
 initializePassport(passport, 
     email => User.find(user => user.email === email),
@@ -30,25 +33,62 @@ app.use(session({
 }))
 app.use(passport.initialize())
 app.use(passport.session())
+app.use(mdethoOverride('_method'))
 
-app.get('/', (req, res) => {
-    res.render('index.ejs', { name: 'Ben'})
+app.get('/', checkAuthenticated, (req, res) => {
+    res.render('index.ejs', { name: req.user.name})
 })
 
-app.get('/login', (req, res) => {
+app.get('/login', checkNotAuthenticated, (req, res) => {
     res.render('login.ejs')
 })
 
-app.get('/register', (req, res) => {
-    res.render('register.ejs')
-})
-app.post('/login', passport.authenticate('local', {
+app.post('/login', checkNotAuthenticated, passport.authenticate('local', {
     successRedirect: '/',
     failureRedirect: '/login',
     failureFlash: true
 }))
-app.use(route)
 
+app.get('/register', checkNotAuthenticated, (req, res) => {
+    res.render('register.ejs')
+})
+
+app.post('/register', checkAuthenticated, async(req, res) => {
+    try {
+        const hashedPassword = await bcrypt.hash(req.body.password, 10)
+        
+        User.push({
+            id:Date.now(),
+            name: req.body.name,
+            email: req.body.email,
+            password: hashedPassword
+        })
+        res.redirect('/login')
+       } catch (error) {
+            throw new Error(error)
+       }
+       console.log(User)
+    }
+)
+
+app.delete('/logout', (req, res) => {
+    req.logout()
+    req.redirect('/login')
+})
+
+function checkAuthenticated(req, res, next){
+    if(req.isAuthenticated()) {
+        return next()
+    }
+    res.redirect('/login')
+}
+
+function checkNotAuthenticated (req, res, next){
+    if(req.isAuthenticated()) {
+        return res.redirect('/')
+    }
+    next()
+}
 app.listen(port, ()=> {
     console.log(`server is listening on port ${port}`)
 })

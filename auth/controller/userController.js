@@ -1,7 +1,7 @@
 const bcrypt = require('bcrypt')
 // const initializePassport = require('./passport-config')
 const { readFileSync, writeFileSync } = require('fs')
-const User = []
+//const User = []
 
 const register = async(req, res) => {
    try {
